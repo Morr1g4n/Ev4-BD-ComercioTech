@@ -26,7 +26,7 @@ def conexion_mongo(uri = uri, nombre_bd = DB_NAME) -> Database:
 db = conexion_mongo()
 dbprint = PrintsBD()
 
-#las funciones empezaran con c(create), r(read), u(update), d(delete) dependiendo de su funcionalidad, servirá como nomenclatura, incluir la colección que va a afectar
+#las funciones empezarán con c(create), r(read), u(update), d(delete) dependiendo de su funcionalidad, servirá como nomenclatura, incluir la colección que va a afectar
 #agregar prints en módulo prints dentro de vista
 class MongoManager:
     def r_clientes_todos(self):
