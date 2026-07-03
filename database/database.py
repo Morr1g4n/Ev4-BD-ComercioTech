@@ -7,16 +7,15 @@ from datetime import datetime, timedelta
 from vista.prints import PrintsBD
 from dotenv import load_dotenv
 
-load_dotenv()
-uri = os.getenv("MONGO_URI")
-DB_NAME = "carrito_compras"
+uri =  "mongodb://127.0.0.1:27017"
+DB_NAME = "gestor_comerciotech"
 COL_CLIENTES = "clientes"
 COL_PEDIDOS = "pedidos"
 COL_PRODUCTOS = "productos"
 
 def conexion_mongo(uri = uri, nombre_bd = DB_NAME) -> Database:
         try:
-            cliente = MongoClient(uri, serverSelectionTimeoutMS = 3000, server_api=ServerApi(version="1", strict=True, deprecation_errors=True))
+            cliente = MongoClient(uri, serverSelectionTimeoutMS = 3000)
             cliente.admin.command("ping")
             db = cliente[nombre_bd]
             return db
@@ -39,3 +38,25 @@ class MongoManager:
                 print("No se encuentran resultados")
         except Exception as e:
              print(e)
+    
+    def c_cliente(self, data):
+        try:
+            cursor = db[COL_CLIENTES].insert_one(
+                {
+                    "rut" : data.get("rut"),
+                    "nombre" : data.get("nombre"),
+                    "fecha_registro" : data.get("fecha_registro"),
+                    "direccion" : data.get("direccion"),
+                    "telefono" : data.get("telefono"),
+                    "email" : data.get("email")
+                }
+            )
+            resultado = cursor.acknowledged 
+            #la función de insert_one retorna una instancia de InsertOneResult (se puede imprimir cursor para ver el objeto que genera)
+            #se puede usar el atributo acknowledged para saber si se insertó o no (booleano)
+            if resultado:
+                print("Se insertó correctamente el cliente.")
+            else:
+                print("Hubo un problema al insertar el cliente.")
+        except Exception as e:
+            print(e)

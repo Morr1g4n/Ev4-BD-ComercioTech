@@ -1,21 +1,10 @@
-from database.database import MongoManager
-from readchar import readkey
-from pymongo.errors import ConnectionFailure
-import subprocess
+from controlador.controladores import Controladores
 
-manager = MongoManager()
+controlador = Controladores()
 
-class Menu():
-    def limpiarconsola(self):
-        subprocess.run("cls||clear", shell=True)
-
-    def continuar(self):
-        print("Presione cualquier tecla para continuar...")
-        readkey()
-        self.limpiarconsola()
-    
+class Menu():    
     def menuInicial(self):
-        self.limpiarconsola()
+        controlador.limpiarconsola()
         while True:
             print("-" * 5 + "Gestor Admin ComercioTech" + "-" * 5)
             print("1.- Gestión Clientes")
@@ -33,11 +22,11 @@ class Menu():
                 print("Adiós!")
                 raise SystemExit
             else:
-                self.limpiarconsola()
+                controlador.limpiarconsola()
                 print("Seleccione una opción válida")
         
     def menuClientes(self):
-        self.limpiarconsola()
+        controlador.limpiarconsola()
         while True:
             print("-" * 5 + "Gestor Clientes" + "-" * 5)
             print("1.- Crear cliente")
@@ -47,23 +36,23 @@ class Menu():
             print("0.- Volver atrás")
             eleccion = input("Elija una opción: ")
             if eleccion == "1":
-                pass
+                crear = controlador.create_cliente()
+                if not crear:
+                    print("Operación cancelada")  
             elif eleccion == "2":
-                self.limpiarconsola()
-                manager.r_clientes_todos()
-                self.continuar()
+                controlador.read_clientes_todos()
             elif eleccion == "3":
-                pass
+                pass                
             elif eleccion == "4":
                 pass
             elif eleccion == "0":
                 self.menuInicial()
             else:
-                self.limpiarconsola()
+                controlador.limpiarconsola()
                 print("Seleccione una opción válida")
     
     def menuPedidos(self):
-        self.limpiarconsola()
+        controlador.limpiarconsola()
     
     def menuProductos(self):
-        self.limpiarconsola()
+        controlador.limpiarconsola()

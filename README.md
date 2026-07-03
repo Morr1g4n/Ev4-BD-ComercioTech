@@ -18,8 +18,5 @@ linux: source .venv/bin/activate
 ```
 pip install -r requirements.txt
 ```
-5. Crear un archivo .env con la URI de mongo
-```
-MONGO_URI=PEGAR URI DE MONGO
-```
-Para probar funciones, crear un archivo test.py (añadido a git.ignore)
+
+Para pruebas, crear un archivo test.py (añadido a git.ignore)
