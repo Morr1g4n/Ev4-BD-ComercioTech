@@ -1,9 +1,11 @@
 from database.database import MongoManager
 from readchar import readkey
 from datetime import datetime, timedelta
+from vista.prints import PrintsBD
 import re
 import subprocess
 
+dbprint = PrintsBD()
 manager = MongoManager()
 
 class Controladores:
@@ -102,3 +104,97 @@ class Controladores:
                 return True #solo usarlo al final, evita que aparezca operación cancelada por el if en menu
             elif eleccion == "n":
                 return False
+    
+    def create_pedido(self):
+        print("(Pulse enter vacío para cancelar la operación)")
+        productos_anadir = [] #usado para mostrar el resumen de los productos y añadirlos al pedido
+        monto_total = 0 #usado para modificar el monto total del pedido al final del calculo
+        while True:
+            try:
+                regex_rut = re.compile("^\\d{8}-\\d$")
+                rut = input("Ingrese RUT del cliente (sin puntos y con guión): ")
+                rut = rut.strip()
+                if not rut:
+                    return False
+                elif not regex_rut.match(rut):
+                    raise ValueError
+                else:
+                    break
+            except ValueError:
+                print("Ingrese un RUT válido")
+        #id_pedido = manager.c_pedido(rut) #se usará más adelante para mantener la id del pedido que estamos añadiendo los productos
+        #if not id_pedido:
+            #print("Hubo un error en la creación del pedido, intente nuevamente")
+            #self.continuar()
+            #return False
+        #else:
+        #print(f"Se creó el pedido con id {str(id_pedido)}")
+        print("Ahora ingresará los productos al pedido")
+        self.continuar()
+        lista_productos = manager.r_productos_anadir_pedido()
+        if not lista_productos:
+            self.continuar()
+            return False
+        for indice, producto in enumerate(lista_productos, start=1):
+            producto["numero_producto"] = indice
+        
+        seguir = True
+        while seguir:
+            dbprint.print_productos_disponibles(lista_productos)
+            try:
+                seleccion = int(input("Seleccione un producto: "))
+                producto_elegido = next((p for p in lista_productos if p["numero_producto"] == seleccion), None)
+                #usa el generador para recorrer toda la lista de productos filtrando con if si es que el número del producto corresponde a la selección
+                #next pide al generador el primer elemento (producto) que coinicida con la condición if y detiene el generador cuando se cumple
+                #en caso de que no haya ninguna coincidencia, el generador entrega None y pide realizar la seleccion otra vez
+                if producto_elegido:
+                    while True:
+                        try:
+                            cantidad = int(input("Ingrese cantidad del producto: "))
+                            if cantidad >= 1:
+                                precio_unitario = int(producto_elegido.get("precio"))
+                                precio_total = cantidad * precio_unitario
+                                monto_total += precio_total
+                                break
+                            else:
+                                print("La cantidad no puede ser menor a 1")
+                        except ValueError:
+                            print("Ingrese un valor válido")
+                    producto_final = {
+                        "producto_id" : producto_elegido.get("_id"),
+                        "nombre" : producto_elegido.get("nombre"),
+                        "cantidad" : cantidad,
+                        "precio" : precio_total
+                    }
+                    productos_anadir.append(producto_final)
+                else:
+                    print("Seleccione un producto válido")
+            except ValueError:
+                print("Ingrese un valor válido")
+            while True:
+                otro = input("¿Quiere añadir otro producto?(S/N): ")
+                otro = otro.strip().lower()
+                if otro == "s":
+                    seguir = True
+                    break
+                elif otro == "n":
+                    seguir = False
+                    break
+                else:
+                    print("Seleccione una opción válida")
+
+        dbprint.print_productos_crear_pedido(productos_anadir)
+        while True:
+            eleccion = input("¿Desea crear el pedido?(S/N): ")
+            eleccion = eleccion.strip().lower()
+            if eleccion == "s":
+                manager.c_pedido(rut, monto_total, productos_anadir)
+                self.continuar()
+                self.limpiarconsola()
+                return True
+            elif eleccion == "n":
+                return False
+            else:
+                print("Seleccione una opción válida")
+                
+

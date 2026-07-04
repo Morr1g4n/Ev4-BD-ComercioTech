@@ -28,3 +28,27 @@ class PrintsBD:
             tabla.append(dato)
         print("Clientes encontrados")
         print(tabulate(tabla, headers=headers, tablefmt="simple_grid"))
+    
+    def print_productos_disponibles(self, lista):
+        tabla = []
+        headers = ["Número Producto", "Nombre", "Precio"]
+        for producto in lista:
+            numero_producto = str(producto.get("numero_producto"))
+            nombre = str(producto.get("nombre"))
+            precio = str(producto.get("precio"))
+            dato = [numero_producto, nombre, precio]
+            tabla.append(dato)
+        print("Lista de productos")
+        print(tabulate(tabla, headers=headers, tablefmt="simple_grid"))
+    
+    def print_productos_crear_pedido(self, lista):
+        tabla = []
+        headers = ["Producto", "Cantidad", "Precio Total"]
+        for producto in lista:
+            nombre = str(producto.get("nombre"))
+            cantidad = str(producto.get("cantidad"))
+            precio = str(producto.get("precio"))
+            dato = [nombre, cantidad, precio]
+            tabla.append(dato)
+        print("Productos a añadir")
+        print(tabulate(tabla, headers=headers, tablefmt="simple_grid"))

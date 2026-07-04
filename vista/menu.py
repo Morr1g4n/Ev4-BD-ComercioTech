@@ -31,7 +31,7 @@ class Menu():
             print("-" * 5 + "Gestor Clientes" + "-" * 5)
             print("1.- Crear cliente")
             print("2.- Ver clientes")
-            print("3.- Actuaizar datos cliente")
+            print("3.- Actualizar datos cliente")
             print("4.- Eliminar cliente")
             print("0.- Volver atrás")
             eleccion = input("Elija una opción: ")
@@ -53,6 +53,31 @@ class Menu():
     
     def menuPedidos(self):
         controlador.limpiarconsola()
-    
+        while True:
+            print("-" * 5 + "Gestor Pedidos" + "-" * 5)
+            print("1.- Crear pedido")
+            print("2.- Ver pedidos")
+            print("3.- Agregar producto a pedido")
+            print("4.- Eliminar producto de un pedido")
+            print("5.- Eliminar pedido")
+            print("0.- Volver atrás")
+            eleccion = input("Elija una opción: ")
+            if eleccion == "1":
+                crear = controlador.create_pedido()
+                if not crear:
+                    print("Operación cancelada")  
+            elif eleccion == "2":
+                controlador.read_clientes_todos()
+            elif eleccion == "3":
+                pass                
+            elif eleccion == "4":
+                pass
+            elif eleccion == "5":
+                pass
+            elif eleccion == "0":
+                self.menuInicial()
+            else:
+                controlador.limpiarconsola()
+                print("Seleccione una opción válida")
     def menuProductos(self):
         controlador.limpiarconsola()
