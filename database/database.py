@@ -107,3 +107,14 @@ class MongoManager:
                 return False
         except Exception as e:
             print(e)
+    
+    def r_comp_rut(self, rut): #comprueba que el rut exista en la bd
+        try:
+            cursor = db[COL_CLIENTES].find({"rut":rut})
+            resultado = list(cursor)
+            if resultado:
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(e)
