@@ -114,21 +114,17 @@ class Controladores:
                 regex_rut = re.compile("^\\d{8}-\\d$")
                 rut = input("Ingrese RUT del cliente (sin puntos y con guión): ")
                 rut = rut.strip()
+                comprobacion = manager.r_comp_rut(rut)
                 if not rut:
                     return False
                 elif not regex_rut.match(rut):
                     raise ValueError
+                elif not comprobacion:
+                    print("El RUT ingresado no existe.")
                 else:
                     break
             except ValueError:
                 print("Ingrese un RUT válido")
-        #id_pedido = manager.c_pedido(rut) #se usará más adelante para mantener la id del pedido que estamos añadiendo los productos
-        #if not id_pedido:
-            #print("Hubo un error en la creación del pedido, intente nuevamente")
-            #self.continuar()
-            #return False
-        #else:
-        #print(f"Se creó el pedido con id {str(id_pedido)}")
         print("Ahora ingresará los productos al pedido")
         self.continuar()
         lista_productos = manager.r_productos_anadir_pedido()
@@ -169,8 +165,12 @@ class Controladores:
                     productos_anadir.append(producto_final)
                 else:
                     print("Seleccione un producto válido")
+                    self.continuar()
+                    continue #evita que se pregunte si se quiere añadir otro producto, evitando ingresar un pedido vacío al continuar con el loop saltandose las siguientes líneas
             except ValueError:
                 print("Ingrese un valor válido")
+                self.continuar()
+                continue
             while True:
                 otro = input("¿Quiere añadir otro producto?(S/N): ")
                 otro = otro.strip().lower()
@@ -183,11 +183,17 @@ class Controladores:
                 else:
                     print("Seleccione una opción válida")
 
-        dbprint.print_productos_crear_pedido(productos_anadir)
+        if not productos_anadir: #si la lista de productos está vacía, se evita que se siga creando el pedido (no debería ser posible pero sirve como otra barrera de seguridad)
+            print("El pedido no puede estar vacío, cancelando..")
+            self.continuar()
+            return False
+        dbprint.print_resumen_crear_pedido(productos_anadir, monto_total, rut)
         while True:
             eleccion = input("¿Desea crear el pedido?(S/N): ")
             eleccion = eleccion.strip().lower()
             if eleccion == "s":
+                for producto in productos_anadir: #elimina el nombre del producto antes de insertarlo, solo fue usado para visualización
+                    del producto["nombre"]
                 manager.c_pedido(rut, monto_total, productos_anadir)
                 self.continuar()
                 self.limpiarconsola()

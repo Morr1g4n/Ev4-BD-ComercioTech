@@ -41,10 +41,11 @@ class PrintsBD:
         print("Lista de productos")
         print(tabulate(tabla, headers=headers, tablefmt="simple_grid"))
     
-    def print_productos_crear_pedido(self, lista):
+    def print_resumen_crear_pedido(self, lista_prod, monto_total, rut):
         tabla = []
-        headers = ["Producto", "Cantidad", "Precio Total"]
-        for producto in lista:
+        tabla2 = [["Monto Total", monto_total], ["RUT Cliente", rut]]
+        headers = ["Producto", "Cantidad", "Precio"]
+        for producto in lista_prod:
             nombre = str(producto.get("nombre"))
             cantidad = str(producto.get("cantidad"))
             precio = str(producto.get("precio"))
@@ -52,3 +53,4 @@ class PrintsBD:
             tabla.append(dato)
         print("Productos a añadir")
         print(tabulate(tabla, headers=headers, tablefmt="simple_grid"))
+        print(tabulate(tabla2, tablefmt="simple_grid"))
