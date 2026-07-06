@@ -112,6 +112,8 @@ class MongoManager:
             cursor = db[COL_PRODUCTOS].find()
             resultados = list(cursor)
             if resultados:
+                for indice, producto in enumerate(resultados, start=1): #agrega indices para así evitar re hacer el print
+                    producto["numero_producto"] = indice
                 dbprint.print_productos_disponibles(resultados)
             else:
                 print("No se encuentran resultados")

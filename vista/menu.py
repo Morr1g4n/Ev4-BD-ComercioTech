@@ -68,9 +68,7 @@ class Menu:
                 if not crear:
                     print("Operación cancelada")
             elif eleccion == "2":
-                mostrar = controlador.read_pedidos_todos()
-                if not mostrar:
-                    print("Operación cancelada")
+                controlador.read_pedidos_todos()
             elif eleccion == "3":
                 pass
             elif eleccion == "4":
@@ -88,7 +86,7 @@ class Menu:
         while True:
             print("-" * 5 + "Gestor Productos" + "-" * 5)
             print("1.- Crear producto")
-            print("2.- Ver producto")
+            print("2.- Ver productos")
             print("3.- Editar producto")
             print("4.- Eliminar producto")
             print("0.- Volver atrás")
@@ -96,7 +94,7 @@ class Menu:
             if eleccion == "1":
                 pass
             elif eleccion == "2":
-                pass
+                controlador.read_productos_todos()
             elif eleccion == "3":
                 pass
             elif eleccion == "4":
