@@ -2,7 +2,8 @@ from controlador.controladores import Controladores
 
 controlador = Controladores()
 
-class Menu():    
+
+class Menu:
     def menuInicial(self):
         controlador.limpiarconsola()
         while True:
@@ -24,7 +25,7 @@ class Menu():
             else:
                 controlador.limpiarconsola()
                 print("Seleccione una opción válida")
-        
+
     def menuClientes(self):
         controlador.limpiarconsola()
         while True:
@@ -38,19 +39,19 @@ class Menu():
             if eleccion == "1":
                 crear = controlador.create_cliente()
                 if not crear:
-                    print("Operación cancelada")  
+                    print("Operación cancelada")
             elif eleccion == "2":
                 controlador.read_clientes_todos()
             elif eleccion == "3":
-                pass                
-            elif eleccion == "4":
                 pass
+            elif eleccion == "4":
+                controlador.delete_cliente()
             elif eleccion == "0":
                 self.menuInicial()
             else:
                 controlador.limpiarconsola()
                 print("Seleccione una opción válida")
-    
+
     def menuPedidos(self):
         controlador.limpiarconsola()
         while True:
@@ -65,11 +66,11 @@ class Menu():
             if eleccion == "1":
                 crear = controlador.create_pedido()
                 if not crear:
-                    print("Operación cancelada")  
+                    print("Operación cancelada")
             elif eleccion == "2":
                 controlador.read_pedidos_todos()
             elif eleccion == "3":
-                pass                
+                pass
             elif eleccion == "4":
                 pass
             elif eleccion == "5":
@@ -85,7 +86,7 @@ class Menu():
         while True:
             print("-" * 5 + "Gestor Productos" + "-" * 5)
             print("1.- Crear producto")
-            print("2.- Ver producto")
+            print("2.- Ver productos")
             print("3.- Editar producto")
             print("4.- Eliminar producto")
             print("0.- Volver atrás")
@@ -93,9 +94,9 @@ class Menu():
             if eleccion == "1":
                 pass
             elif eleccion == "2":
-                pass
+                controlador.read_productos_todos()
             elif eleccion == "3":
-                pass                
+                pass
             elif eleccion == "4":
                 pass
             elif eleccion == "0":
