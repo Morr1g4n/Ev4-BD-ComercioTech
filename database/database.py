@@ -43,6 +43,16 @@ class MongoManager:
         except Exception as e:
             print(e)
 
+    def d_cliente(self, rut):
+        try:
+            cursor = db[COL_CLIENTES].delete_one({"rut": rut})
+            if cursor.deleted_count>=1:
+                print("Se ha eliminado el cliente")
+            else:
+                print("Cliente no encontrado")
+        except Exception as e:
+            print(e)
+
     def c_cliente(self, data):
         try:
             cursor = db[COL_CLIENTES].insert_one(

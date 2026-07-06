@@ -8,6 +8,7 @@ import subprocess
 dbprint = PrintsBD()
 manager = MongoManager()
 
+
 class Controladores:
     def limpiarconsola(self):
         subprocess.run("cls||clear", shell=True)
@@ -32,7 +33,6 @@ class Controladores:
         manager.r_productos_all()
         self.continuar()
 
-
     def create_cliente(self):
         print("(Pulse enter vacío para cancelar la operación)")
         while True:
@@ -41,14 +41,14 @@ class Controladores:
                 rut = input("Ingrese RUT (sin puntos y con guión): ")
                 rut = rut.strip()
                 if not rut:
-                    return False #se usará en caso de querer cancelar toda la operación, volverá al menú
+                    return False  # se usará en caso de querer cancelar toda la operación, volverá al menú
                 elif not regex_rut.match(rut):
                     raise ValueError
                 else:
                     break
             except ValueError:
                 print("Ingrese un RUT válido")
-        
+
         pnombre = input("Ingrese primer nombre: ")
         if not pnombre:
             return False
@@ -58,14 +58,18 @@ class Controladores:
             return False
         apellido = apellido.strip().capitalize()
         nombre = pnombre + " " + apellido
-        
+
         while True:
             try:
-                fecha_registro = input("Ingrese fecha de registro(Formato AAAA-MM-DD, incluya guión): ")
+                fecha_registro = input(
+                    "Ingrese fecha de registro(Formato AAAA-MM-DD, incluya guión): "
+                )
                 if fecha_registro == "":
                     return False
                 fecha_registro = fecha_registro.strip()
-                fecha_registro = datetime.strptime(fecha_registro, "%Y-%m-%d") #lanza value error si el formato es incorrecto o la fecha es inválida, no hace falta un raise
+                fecha_registro = datetime.strptime(
+                    fecha_registro, "%Y-%m-%d"
+                )  # lanza value error si el formato es incorrecto o la fecha es inválida, no hace falta un raise
                 break
             except ValueError:
                 print("Ingrese una fecha válida")
@@ -74,7 +78,7 @@ class Controladores:
         direccion = direccion.strip()
         if not direccion:
             return False
-        
+
         while True:
             try:
                 regex_tel = re.compile("^\\+569\\d{8}$")
@@ -89,7 +93,7 @@ class Controladores:
                     break
             except ValueError:
                 print("Ingrese un teléfono válido")
-        
+
         email = input("Ingrese e-mail: ")
         if not email:
             return False
@@ -101,25 +105,58 @@ class Controladores:
             "fecha_registro": fecha_registro,
             "direccion": direccion,
             "telefono": telefono,
-            "email": email
+            "email": email,
         }
 
         print("Datos cliente a añadir:")
-        print(f"RUT: {cliente["rut"]} | Nombre: {cliente["nombre"]} | Fecha Registro: {cliente["fecha_registro"]} | Dirección: {cliente["direccion"]} | Teléfono: {cliente["telefono"]} | E-mail: {cliente["email"]}")
+        print(
+            f"RUT: {cliente["rut"]} | Nombre: {cliente["nombre"]} | Fecha Registro: {cliente["fecha_registro"]} | Dirección: {cliente["direccion"]} | Teléfono: {cliente["telefono"]} | E-mail: {cliente["email"]}"
+        )
         while True:
             eleccion = input("¿Quiere agregar a este cliente? (S/N): ")
             eleccion = eleccion.strip().lower()
             if eleccion == "s":
                 manager.c_cliente(cliente)
                 self.continuar()
-                return True #solo usarlo al final, evita que aparezca operación cancelada por el if en menu
+                return True  # solo usarlo al final, evita que aparezca operación cancelada por el if en menu
             elif eleccion == "n":
                 return False
-    
+
+    def delete_cliente(self):
+        self.limpiarconsola()
+        rut = self.ValidarRut()
+        manager.d_cliente(rut)
+        self.continuar()
+
+    def ValidarRut(self):
+        rutValido = ""
+        while rutValido == "":
+            try:
+                regex_rut = re.compile("^\\d{8}-\\d$")
+                rut = input("Ingrese RUT del cliente (sin puntos y con guión): ")
+                while rut == "":
+                    rut = input("Ingrese RUT del cliente (sin puntos y con guión): ")
+                rut = rut.strip()
+                if not regex_rut.match(rut):
+                    print("Ingrese un RUT válido")
+                else:
+                    comprobacion = manager.r_comp_rut(rut)
+                    if comprobacion:
+                        rutValido = rut
+                        return rutValido
+                    else:
+                        print("Rut no existe en la base de datos")
+            except Exception as e:
+                print(e)
+
     def create_pedido(self):
         print("(Pulse enter vacío para cancelar la operación)")
-        productos_anadir = [] #usado para mostrar el resumen de los productos y añadirlos al pedido
-        monto_total = 0 #usado para modificar el monto total del pedido al final del calculo
+        productos_anadir = (
+            []
+        )  # usado para mostrar el resumen de los productos y añadirlos al pedido
+        monto_total = (
+            0  # usado para modificar el monto total del pedido al final del calculo
+        )
         while True:
             try:
                 regex_rut = re.compile("^\\d{8}-\\d$")
@@ -144,16 +181,19 @@ class Controladores:
             return False
         for indice, producto in enumerate(lista_productos, start=1):
             producto["numero_producto"] = indice
-        
+
         seguir = True
         while seguir:
             dbprint.print_productos_disponibles(lista_productos)
             try:
                 seleccion = int(input("Seleccione un producto: "))
-                producto_elegido = next((p for p in lista_productos if p["numero_producto"] == seleccion), None)
-                #usa el generador para recorrer toda la lista de productos filtrando con if si es que el número del producto corresponde a la selección
-                #next pide al generador el primer elemento (producto) que coinicida con la condición if y detiene el generador cuando se cumple
-                #en caso de que no haya ninguna coincidencia, el generador entrega None y pide realizar la seleccion otra vez
+                producto_elegido = next(
+                    (p for p in lista_productos if p["numero_producto"] == seleccion),
+                    None,
+                )
+                # usa el generador para recorrer toda la lista de productos filtrando con if si es que el número del producto corresponde a la selección
+                # next pide al generador el primer elemento (producto) que coinicida con la condición if y detiene el generador cuando se cumple
+                # en caso de que no haya ninguna coincidencia, el generador entrega None y pide realizar la seleccion otra vez
                 if producto_elegido:
                     while True:
                         try:
@@ -168,16 +208,16 @@ class Controladores:
                         except ValueError:
                             print("Ingrese un valor válido")
                     producto_final = {
-                        "producto_id" : producto_elegido.get("_id"),
-                        "nombre" : producto_elegido.get("nombre"),
-                        "cantidad" : cantidad,
-                        "precio" : precio_total
+                        "producto_id": producto_elegido.get("_id"),
+                        "nombre": producto_elegido.get("nombre"),
+                        "cantidad": cantidad,
+                        "precio": precio_total,
                     }
                     productos_anadir.append(producto_final)
                 else:
                     print("Seleccione un producto válido")
                     self.continuar()
-                    continue #evita que se pregunte si se quiere añadir otro producto, evitando ingresar un pedido vacío al continuar con el loop saltandose las siguientes líneas
+                    continue  # evita que se pregunte si se quiere añadir otro producto, evitando ingresar un pedido vacío al continuar con el loop saltandose las siguientes líneas
             except ValueError:
                 print("Ingrese un valor válido")
                 self.continuar()
@@ -194,7 +234,9 @@ class Controladores:
                 else:
                     print("Seleccione una opción válida")
 
-        if not productos_anadir: #si la lista de productos está vacía, se evita que se siga creando el pedido (no debería ser posible pero sirve como otra barrera de seguridad)
+        if (
+            not productos_anadir
+        ):  # si la lista de productos está vacía, se evita que se siga creando el pedido (no debería ser posible pero sirve como otra barrera de seguridad)
             print("El pedido no puede estar vacío, cancelando..")
             self.continuar()
             return False
@@ -203,7 +245,11 @@ class Controladores:
             eleccion = input("¿Desea crear el pedido?(S/N): ")
             eleccion = eleccion.strip().lower()
             if eleccion == "s":
-                for producto in productos_anadir: #elimina el nombre del producto antes de insertarlo, solo fue usado para visualización
+                for (
+                    producto
+                ) in (
+                    productos_anadir
+                ):  # elimina el nombre del producto antes de insertarlo, solo fue usado para visualización
                     del producto["nombre"]
                 manager.c_pedido(rut, monto_total, productos_anadir)
                 self.continuar()
@@ -213,5 +259,3 @@ class Controladores:
                 return False
             else:
                 print("Seleccione una opción válida")
-
-

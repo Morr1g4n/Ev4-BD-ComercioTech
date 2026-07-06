@@ -45,7 +45,7 @@ class Menu:
             elif eleccion == "3":
                 pass
             elif eleccion == "4":
-                pass
+                controlador.delete_cliente()
             elif eleccion == "0":
                 self.menuInicial()
             else:
