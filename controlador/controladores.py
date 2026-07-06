@@ -27,6 +27,12 @@ class Controladores:
         manager.r_pedidos_todos()
         self.continuar()
 
+    def read_productos_todos(self):
+        self.limpiarconsola()
+        manager.r_productos_all()
+        self.continuar()
+
+
     def create_cliente(self):
         print("(Pulse enter vacío para cancelar la operación)")
         while True:
@@ -207,5 +213,5 @@ class Controladores:
                 return False
             else:
                 print("Seleccione una opción válida")
-                
+
 

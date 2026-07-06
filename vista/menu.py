@@ -2,7 +2,8 @@ from controlador.controladores import Controladores
 
 controlador = Controladores()
 
-class Menu():    
+
+class Menu:
     def menuInicial(self):
         controlador.limpiarconsola()
         while True:
@@ -24,7 +25,7 @@ class Menu():
             else:
                 controlador.limpiarconsola()
                 print("Seleccione una opción válida")
-        
+
     def menuClientes(self):
         controlador.limpiarconsola()
         while True:
@@ -38,11 +39,11 @@ class Menu():
             if eleccion == "1":
                 crear = controlador.create_cliente()
                 if not crear:
-                    print("Operación cancelada")  
+                    print("Operación cancelada")
             elif eleccion == "2":
                 controlador.read_clientes_todos()
             elif eleccion == "3":
-                pass                
+                pass
             elif eleccion == "4":
                 pass
             elif eleccion == "0":
@@ -50,7 +51,7 @@ class Menu():
             else:
                 controlador.limpiarconsola()
                 print("Seleccione una opción válida")
-    
+
     def menuPedidos(self):
         controlador.limpiarconsola()
         while True:
@@ -65,11 +66,13 @@ class Menu():
             if eleccion == "1":
                 crear = controlador.create_pedido()
                 if not crear:
-                    print("Operación cancelada")  
+                    print("Operación cancelada")
             elif eleccion == "2":
-                controlador.read_pedidos_todos()
+                mostrar = controlador.read_pedidos_todos()
+                if not mostrar:
+                    print("Operación cancelada")
             elif eleccion == "3":
-                pass                
+                pass
             elif eleccion == "4":
                 pass
             elif eleccion == "5":
@@ -95,7 +98,7 @@ class Menu():
             elif eleccion == "2":
                 pass
             elif eleccion == "3":
-                pass                
+                pass
             elif eleccion == "4":
                 pass
             elif eleccion == "0":
