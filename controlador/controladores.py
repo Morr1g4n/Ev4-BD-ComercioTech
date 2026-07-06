@@ -22,6 +22,11 @@ class Controladores:
         manager.r_clientes_todos()
         self.continuar()
 
+    def read_pedidos_todos(self):
+        self.limpiarconsola()
+        manager.r_pedidos_todos()
+        self.continuar()
+
     def create_cliente(self):
         print("(Pulse enter vacío para cancelar la operación)")
         while True:

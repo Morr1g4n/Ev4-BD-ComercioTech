@@ -67,7 +67,7 @@ class Menu():
                 if not crear:
                     print("Operación cancelada")  
             elif eleccion == "2":
-                controlador.read_clientes_todos()
+                controlador.read_pedidos_todos()
             elif eleccion == "3":
                 pass                
             elif eleccion == "4":
