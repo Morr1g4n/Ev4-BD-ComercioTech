@@ -54,3 +54,43 @@ class PrintsBD:
         print("Productos a añadir")
         print(tabulate(tabla, headers=headers, tablefmt="simple_grid"))
         print(tabulate(tabla2, tablefmt="simple_grid"))
+    
+    def print_pedidos(self, lista):
+        #tabulate tiene una forma integrada de añadir indices, pero por la forma en que se debe mostrar la información acá, se añade de forma manual
+        print("-"*50)
+        for indice, pedido in enumerate(lista, start=1): 
+            pedido["numero_pedido"] = indice
+
+        for pedido in lista:
+            lista_productos = pedido.get("productos")
+            tabla = []
+            headers = ["Nº Pedido", "RUT", "Fecha Pedido", "Monto Total"]
+            numero_pedido = str(pedido.get("numero_pedido"))
+            rut = str(pedido.get("rut_cliente"))
+            fecha_pedido_cruda = pedido.get("fecha_pedido")
+            if isinstance(fecha_pedido_cruda, datetime):
+                fecha_pedido = fecha_pedido_cruda.strftime("%Y-%m-%d")
+            elif fecha_pedido_cruda:
+                try:
+                    fecha_pedido = datetime.strftime(datetime.fromisoformat(str(fecha_pedido_cruda)), "%Y-%m-%d")
+                except ValueError:
+                    fecha_pedido = str(fecha_pedido_cruda)
+            else:
+                fecha_pedido = ("N/A")
+            monto_total = str(pedido.get("monto_total"))
+            dato = [numero_pedido, rut, fecha_pedido, monto_total]
+            tabla.append(dato)
+            print(tabulate(tabla, headers=headers, tablefmt="simple_grid"))
+            print("Productos del pedido")
+            tabla_prod = []
+            headers_prod = ["Nombre", "Cantidad", "Precio"]
+            for producto in lista_productos:
+                nombre = str(producto.get("nombre"))
+                cantidad = str(producto.get("cantidad"))
+                precio = str(producto.get("precio"))
+                dato_prod = [nombre, cantidad, precio]
+                tabla_prod.append(dato_prod)
+            print(tabulate(tabla_prod, headers=headers_prod, tablefmt="simple_grid"))
+            print("-"*50)
+
+            
