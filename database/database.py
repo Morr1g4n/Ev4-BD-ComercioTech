@@ -188,3 +188,62 @@ class MongoManager:
                 print("No se encontraron pedidos")
         except Exception as e:
             print(e)
+
+    def r_pedidos_rut(self, rut):
+        try:
+            cursor = db[COL_PEDIDOS].aggregate(
+                [
+                    {
+                        "$match": {"rut_cliente": rut}
+                    },
+                    {
+                        "$unwind": "$productos"
+                    },  # desarma el array de productos para buscar de forma individual los datos de cada producto (cada producto es un array)
+                    {
+                        "$lookup": {  # consigue los datos del producto
+                            "from": "productos",
+                            "localField": "productos.producto_id",
+                            "foreignField": "_id",
+                            "as": "datos_producto",
+                        }
+                    },
+                    {"$unwind": "$datos_producto"},  # desarma los datos del producto
+                    {
+                        "$addFields": {
+                            "productos.nombre": "$datos_producto.nombre"  # añade al array de cada producto su nombre específico
+                        }
+                    },
+                    {
+                        "$group": {  # agrupa todo como estaba
+                            "_id": "$_id",
+                            "rut_cliente": {
+                                "$first": "$rut_cliente"
+                            },  # devuelve el primer valor encontrado porque se multiplicaron al desarmar el array de productos, evita errores
+                            "fecha_pedido": {"$first": "$fecha_pedido"},
+                            "monto_total": {"$first": "$monto_total"},
+                            "productos": {
+                                "$push": "$productos"
+                            },  # vuelve a armar el array de productos
+                        }
+                    },
+                ]
+            )
+            resultado = list(cursor)
+            if resultado:
+                return resultado
+            else:
+                print("No se encontraron pedidos para ese RUT")
+                return False
+        except Exception as e:
+            print(e)
+
+    def d_pedido(self, id):
+        try:
+            cursor = db[COL_PEDIDOS].delete_one({"_id": id})
+            resultado = cursor.deleted_count #devuelve la cantidad de documentos que se borraron, sirve como comprobación
+            if resultado == 1:
+                print("Se eliminó el pedido correctamente")
+            else:
+                print("Hubo un error al eliminar el pedido")
+        except Exception as e:
+            print(e)
