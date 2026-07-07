@@ -259,3 +259,45 @@ class Controladores:
                 return False
             else:
                 print("Seleccione una opción válida")
+    
+    def delete_pedido(self):
+        self.limpiarconsola()
+        print("(Ingrese RUT del cliente para ver sus pedidos)")
+        rut = self.ValidarRut()
+        lista_pedidos = manager.r_pedidos_rut(rut)
+        if not lista_pedidos:
+            self.continuar()
+            return False
+        while True:
+            dbprint.print_pedidos(lista_pedidos) #esta función de print ya añade el índice seleccionable a la lista, por lo que no hace falta agregarlo aparte
+            try:
+                seleccion = int(input("Seleccione un pedido: "))
+                pedido_elegido = next(
+                    (p for p in lista_pedidos if p["numero_pedido"] == seleccion),
+                    None,
+                )
+                if pedido_elegido:
+                    id_pedido_elegido = pedido_elegido.get("_id")
+                    break
+                else:
+                    print("Ingrese un pedido válido")
+                    self.continuar()
+            except ValueError:
+                print("Ingrese un valor válido")
+                self.continuar()
+        
+        while True:
+            eleccion = input("¿Está seguro que quiere eliminar este pedido?(S/N): ")
+            eleccion = eleccion.strip().lower()
+            if eleccion == "s":
+                manager.d_pedido(id_pedido_elegido)
+                self.continuar()
+                return True
+            elif eleccion == "n":
+                print("Cancelando operación..")
+                self.continuar()
+                return False
+            else:
+                print("Ingrese una opción válida")
+
+

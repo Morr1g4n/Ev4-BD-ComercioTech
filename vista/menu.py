@@ -74,7 +74,9 @@ class Menu:
             elif eleccion == "4":
                 pass
             elif eleccion == "5":
-                pass
+                eliminar = controlador.delete_pedido()
+                if not eliminar:
+                    print("Operación cancelada")
             elif eleccion == "0":
                 self.menuInicial()
             else:
