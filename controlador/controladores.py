@@ -300,4 +300,111 @@ class Controladores:
             else:
                 print("Ingrese una opción válida")
 
+    def update_anadir_producto_pedido(self):
+        self.limpiarconsola()
+        print("(Ingrese RUT del cliente para ver sus pedidos)")
+        rut = self.ValidarRut()
+        productos_anadir = []
+        lista_pedidos = manager.r_pedidos_rut(rut)
+        if not lista_pedidos:
+            self.continuar()
+            return False
+        while True:
+            dbprint.print_pedidos(lista_pedidos) #esta función de print ya añade el índice seleccionable a la lista, por lo que no hace falta agregarlo aparte
+            try:
+                seleccion = int(input("Seleccione un pedido: "))
+                pedido_elegido = next(
+                    (p for p in lista_pedidos if p["numero_pedido"] == seleccion),
+                    None,
+                )
+                if pedido_elegido:
+                    id_pedido_elegido = pedido_elegido.get("_id")
+                    monto_total = int(pedido_elegido.get("monto_total"))
+                    break
+                else:
+                    print("Ingrese un pedido válido")
+                    self.continuar()
+            except ValueError:
+                print("Ingrese un valor válido")
+                self.continuar()
+        print("Ahora ingresará los productos al pedido")
+        self.continuar()
+        lista_productos = manager.r_productos_anadir_pedido()
+        if not lista_productos:
+            self.continuar()
+            return False
+        for indice, producto in enumerate(lista_productos, start=1):
+            producto["numero_producto"] = indice
 
+        seguir = True
+        while seguir:
+            dbprint.print_productos_disponibles(lista_productos)
+            try:
+                seleccion = int(input("Seleccione un producto: "))
+                producto_elegido = next(
+                    (p for p in lista_productos if p["numero_producto"] == seleccion),
+                    None,
+                )
+                # usa el generador para recorrer toda la lista de productos filtrando con if si es que el número del producto corresponde a la selección
+                # next pide al generador el primer elemento (producto) que coinicida con la condición if y detiene el generador cuando se cumple
+                # en caso de que no haya ninguna coincidencia, el generador entrega None y pide realizar la seleccion otra vez
+                if producto_elegido:
+                    while True:
+                        try:
+                            cantidad = int(input("Ingrese cantidad del producto: "))
+                            if cantidad >= 1:
+                                precio_unitario = int(producto_elegido.get("precio"))
+                                precio_total = cantidad * precio_unitario
+                                monto_total += precio_total
+                                break
+                            else:
+                                print("La cantidad no puede ser menor a 1")
+                        except ValueError:
+                            print("Ingrese un valor válido")
+                    producto_final = {
+                        "producto_id": producto_elegido.get("_id"),
+                        "nombre": producto_elegido.get("nombre"),
+                        "cantidad": cantidad,
+                        "precio": precio_total,
+                    }
+                    productos_anadir.append(producto_final)
+                else:
+                    print("Seleccione un producto válido")
+                    self.continuar()
+                    continue  # evita que se pregunte si se quiere añadir otro producto, evitando ingresar un pedido vacío al continuar con el loop saltandose las siguientes líneas
+            except ValueError:
+                print("Ingrese un valor válido")
+                self.continuar()
+                continue
+            while True:
+                otro = input("¿Quiere añadir otro producto?(S/N): ")
+                otro = otro.strip().lower()
+                if otro == "s":
+                    seguir = True
+                    break
+                elif otro == "n":
+                    seguir = False
+                    break
+                else:
+                    print("Seleccione una opción válida")
+
+        if (
+            not productos_anadir
+        ):  # si la lista de productos está vacía, se evita que se siga creando el pedido (no debería ser posible pero sirve como otra barrera de seguridad)
+            print("El pedido no puede estar vacío, cancelando..")
+            self.continuar()
+            return False
+        
+        while True:
+            eleccion = input("¿Desea agregar los productos al pedido?(S/N): ")
+            eleccion = eleccion.strip().lower()
+            if eleccion == "s":
+                for producto in productos_anadir:
+                    del producto["nombre"]
+                manager.u_pedido_anadir_productos(id_pedido_elegido, monto_total, productos_anadir)
+                self.continuar()
+                return True
+            elif eleccion == "n":
+                print("Cancelando operación..")
+                self.continuar()
+                return False

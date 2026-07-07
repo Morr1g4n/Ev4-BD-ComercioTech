@@ -247,3 +247,36 @@ class MongoManager:
                 print("Hubo un error al eliminar el pedido")
         except Exception as e:
             print(e)
+
+    def u_pedido_anadir_productos(self, id, monto_total, lista_productos):
+        try:
+            cursor = db[COL_PEDIDOS].update_one(
+                {
+                    "_id":id
+                },
+                {
+                    "$set":
+                    {
+                        "monto_total":monto_total
+                    }
+                }
+            )
+            for producto in lista_productos:
+                cursor = db[COL_PEDIDOS].update_one(
+                    {
+                        "_id":id
+                    },
+                    {
+                        "$push":
+                    {
+                        "productos": producto
+                    }
+                    }
+                )
+            resultado = cursor.modified_count
+            if resultado == 1:
+                print("Se agregaron los productos correctamente")
+            else:
+                print("Hubo un error al agregar los productos")
+        except Exception as e:
+            print(e)
