@@ -75,9 +75,13 @@ class Menu:
             elif eleccion == "2":
                 controlador.read_pedidos_todos()
             elif eleccion == "3":
-                pass
+                anadir_producto = controlador.update_anadir_producto_pedido()
+                if not anadir_producto:
+                    print("Operación cancelada")
             elif eleccion == "4":
-                pass
+                eliminar_producto = controlador.update_eliminar_producto_pedido()
+                if not eliminar_producto:
+                    print("Operación cancelada")
             elif eleccion == "5":
                 eliminar = controlador.delete_pedido()
                 if not eliminar:

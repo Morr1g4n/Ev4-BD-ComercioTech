@@ -285,3 +285,63 @@ class MongoManager:
                 print("Hubo un problema al insertar el producto")
         except Exception as e:
             print(e)
+
+    def u_pedido_anadir_productos(self, id, monto_total, lista_productos):
+        try:
+            cursor = db[COL_PEDIDOS].update_one(
+                {
+                    "_id":id
+                },
+                {
+                    "$set":
+                    {
+                        "monto_total":monto_total
+                    }
+                }
+            )
+            for producto in lista_productos:
+                cursor = db[COL_PEDIDOS].update_one(
+                    {
+                        "_id":id
+                    },
+                    {
+                        "$push":
+                    {
+                        "productos": producto
+                    }
+                    }
+                )
+            resultado = cursor.modified_count
+            if resultado == 1:
+                print("Se agregaron los productos correctamente")
+            else:
+                print("Hubo un error al agregar los productos")
+        except Exception as e:
+            print(e)
+    
+    def u_pedido_eliminar_productos(self, id_pedido, monto_total, id_producto):
+        try:
+            id_producto = ObjectId(id_producto)
+            id_pedido = ObjectId(id_pedido)
+            cursor = db[COL_PEDIDOS].update_one(
+                {
+                    "_id":id_pedido
+                },
+                {
+                    "$set":
+                    {
+                        "monto_total":monto_total
+                    },
+                    "$pull":
+                    {
+                        "productos": {"producto_id": id_producto}
+                    }
+                }
+            )
+            resultado = cursor.modified_count
+            if resultado == 1:
+                print("Se eliminó el producto correctamente")
+            else:
+                print("Hubo un error al eliminar el producto")
+        except Exception as e:
+            print(e)
