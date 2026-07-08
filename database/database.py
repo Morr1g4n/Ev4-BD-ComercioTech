@@ -1,3 +1,4 @@
+import json
 import os
 from pymongo import MongoClient
 from bson import ObjectId
@@ -7,6 +8,7 @@ from pymongo.errors import ConnectionFailure
 from datetime import datetime, timedelta
 from vista.prints import PrintsBD
 from dotenv import load_dotenv
+from bson import json_util
 
 uri = "mongodb://127.0.0.1:27017"
 DB_NAME = "gestor_comerciotech"
@@ -32,6 +34,21 @@ dbprint = PrintsBD()
 # las funciones empezarán con c(create), r(read), u(update), d(delete) dependiendo de su funcionalidad, servirá como nomenclatura, incluir la colección que va a afectar
 # agregar prints en módulo prints dentro de vista
 class MongoManager:
+
+    def setup(self):
+        try:
+            colecciones = (COL_CLIENTES, COL_PEDIDOS, COL_PRODUCTOS)
+            for coleccion in colecciones:
+                db.drop_collection(coleccion)
+                with open("{}.json".format(coleccion), "r", encoding="utf-8") as f:
+                    contenido = f.read()
+                    data = json_util.loads(contenido)
+                db.create_collection(coleccion)
+                db[coleccion].insert_many(data)
+            print("Base de datos lista")
+        except Exception as e:
+            print(e)
+
     def r_clientes_todos(self):
         try:
             cursor = db[COL_CLIENTES].find()
@@ -46,7 +63,7 @@ class MongoManager:
     def d_cliente(self, rut):
         try:
             cursor = db[COL_CLIENTES].delete_one({"rut": rut})
-            if cursor.deleted_count>=1:
+            if cursor.deleted_count >= 1:
                 print("Se ha eliminado el cliente")
             else:
                 print("Cliente no encontrado")
@@ -112,7 +129,9 @@ class MongoManager:
             cursor = db[COL_PRODUCTOS].find()
             resultados = list(cursor)
             if resultados:
-                for indice, producto in enumerate(resultados, start=1): #agrega indices para así evitar re hacer el print
+                for indice, producto in enumerate(
+                    resultados, start=1
+                ):  # agrega indices para así evitar re hacer el print
                     producto["numero_producto"] = indice
                 dbprint.print_productos_disponibles(resultados)
             else:
@@ -193,9 +212,7 @@ class MongoManager:
         try:
             cursor = db[COL_PEDIDOS].aggregate(
                 [
-                    {
-                        "$match": {"rut_cliente": rut}
-                    },
+                    {"$match": {"rut_cliente": rut}},
                     {
                         "$unwind": "$productos"
                     },  # desarma el array de productos para buscar de forma individual los datos de cada producto (cada producto es un array)
@@ -240,13 +257,35 @@ class MongoManager:
     def d_pedido(self, id):
         try:
             cursor = db[COL_PEDIDOS].delete_one({"_id": id})
-            resultado = cursor.deleted_count #devuelve la cantidad de documentos que se borraron, sirve como comprobación
+            resultado = (
+                cursor.deleted_count
+            )  # devuelve la cantidad de documentos que se borraron, sirve como comprobación
             if resultado == 1:
                 print("Se eliminó el pedido correctamente")
             else:
                 print("Hubo un error al eliminar el pedido")
         except Exception as e:
             print(e)
+
+    def c_producto(self, data):
+        try:
+            cursor = db[COL_PRODUCTOS].insert_one(
+                {
+                    "nombre": data.get("nombre"),
+                    "precio": data.get("precio"),
+
+                }
+            )
+            resultado = cursor.acknowledged
+            # la función de insert_one retorna una instancia de InsertOneResult (se puede imprimir cursor para ver el objeto que genera)
+            # se puede usar el atributo acknowledged para saber si se insertó o no (booleano)
+            if resultado:
+                print("Se insertó correctamente el producto.")
+            else:
+                print("Hubo un problema al insertar el producto")
+        except Exception as e:
+            print(e)
+
 
     def u_pedido_anadir_productos(self, id, monto_total, lista_productos):
         try:

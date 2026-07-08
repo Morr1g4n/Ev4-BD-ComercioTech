@@ -300,6 +300,42 @@ class Controladores:
             else:
                 print("Ingrese una opción válida")
 
+    def create_producto(self):
+        self.limpiarconsola()
+        print("(Pulse enter vacío para cancelar la operación)")
+        nombre = input("Ingrese nombre del producto que agregará: ")
+        if not nombre:
+            return False
+        nombre = nombre.strip()
+
+        while True:
+            precio = input("Ingrese el precio del producto: ")
+            if not precio:
+                return False
+
+            if precio.isdigit(): #Esto es un metodo propio de python de las cadenas de texto
+                precio = int(precio) #luegod e hacer todas las comprobaciones transformamos el precio en un int
+                break
+            else:
+                print("Error. Debe ingresar un número entero válido")
+
+        producto = {
+            "nombre": nombre,
+            "precio": precio,
+        }
+        print("Datos del Producto a añadir:")
+        print(
+            f"Nombre: {producto["nombre"]} | Precio: {producto["precio"]}"
+        )
+        while True:
+            eleccion = input("¿Quiere agregar este producto? (S/N): ")
+            eleccion = eleccion.strip().lower()
+            if eleccion == "s":
+                manager.c_producto(producto)
+                self.continuar()
+                return True  # solo usarlo al final, evita que aparezca operación cancelada por el if en menu
+            elif eleccion == "n":
+                return False
     def update_anadir_producto_pedido(self):
         self.limpiarconsola()
         print("(Ingrese RUT del cliente para ver sus pedidos)")

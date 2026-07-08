@@ -1,4 +1,5 @@
 from controlador.controladores import Controladores
+from controlador.controladores import manager
 
 controlador = Controladores()
 
@@ -11,6 +12,7 @@ class Menu:
             print("1.- Gestión Clientes")
             print("2.- Gestión Pedidos")
             print("3.- Gestión Productos")
+            print("4.- Configurar base de datos (precargar datos y crear colecciones)")
             print("0.- Salir")
             eleccion = input("Elija una opción: ")
             if eleccion == "1":
@@ -19,6 +21,9 @@ class Menu:
                 self.menuPedidos()
             elif eleccion == "3":
                 self.menuProductos()
+            elif eleccion == "4":
+                controlador.limpiarconsola()
+                manager.setup()
             elif eleccion == "0":
                 print("Adiós!")
                 raise SystemExit
@@ -96,7 +101,9 @@ class Menu:
             print("0.- Volver atrás")
             eleccion = input("Elija una opción: ")
             if eleccion == "1":
-                pass
+                crear = controlador.create_producto()
+                if not crear:
+                    print("Operación cancelada")
             elif eleccion == "2":
                 controlador.read_productos_todos()
             elif eleccion == "3":
