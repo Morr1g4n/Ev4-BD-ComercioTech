@@ -33,9 +33,6 @@ class Controladores:
         manager.r_productos_all()
         self.continuar()
 
-
-
-#Seccion Clientes
     def create_cliente(self):
         print("(Pulse enter vacío para cancelar la operación)")
         while True:
@@ -152,9 +149,6 @@ class Controladores:
             except Exception as e:
                 print(e)
 
-
-
-#Seccion Pedidos
     def create_pedido(self):
         print("(Pulse enter vacío para cancelar la operación)")
         productos_anadir = (
@@ -306,8 +300,6 @@ class Controladores:
             else:
                 print("Ingrese una opción válida")
 
-
-#Seccion Productos
     def create_producto(self):
         self.limpiarconsola()
         print("(Pulse enter vacío para cancelar la operación)")

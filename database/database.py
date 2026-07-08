@@ -267,9 +267,6 @@ class MongoManager:
         except Exception as e:
             print(e)
 
-
-
-#Seccion Producto
     def c_producto(self, data):
         try:
             cursor = db[COL_PRODUCTOS].insert_one(
