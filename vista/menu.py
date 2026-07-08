@@ -99,7 +99,9 @@ class Menu:
             print("0.- Volver atrás")
             eleccion = input("Elija una opción: ")
             if eleccion == "1":
-                pass
+                crear = controlador.create_producto()
+                if not crear:
+                    print("Operación cancelada")
             elif eleccion == "2":
                 controlador.read_productos_todos()
             elif eleccion == "3":
