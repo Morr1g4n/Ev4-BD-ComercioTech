@@ -1,0 +1,117 @@
+[{
+  "_id": {
+    "$oid": "6a17154cc6d3d83b6cabc114"
+  },
+  "rut": "12345678-9",
+  "nombre": "Pedro Perez",
+  "fecha_registro": {
+    "$date": "2026-05-16T00:00:00.000Z"
+  },
+  "direccion": "Calle Blanca 1259, La Florida",
+  "telefono": "+56912345678",
+  "email": "pedro123@gmail.com"
+},
+{
+  "_id": {
+    "$oid": "6a1713e40aecf488ee8d66ff"
+  },
+  "rut": "22444555-3",
+  "nombre": "Anuel Castaño",
+  "fecha_registro": {
+    "$date": "2024-01-15T00:00:00.000Z"
+  },
+  "direccion": "Las Almendras 555",
+  "telefono": "+56922445503",
+  "email": "acastano@outlook.com"
+},
+{
+  "_id": {
+    "$oid": "6a1717ecc6d3d83b6cabc115"
+  },
+  "rut": "21888999-2",
+  "nombre": "Catalina Mendez",
+  "fecha_registro": {
+    "$date": "2026-02-10T00:00:00.000Z"
+  },
+  "direccion": "Chacabuco 702, San Carlos",
+  "telefono": "+56955554321",
+  "email": "catamz@outlook.com"
+},
+{
+  "_id": {
+    "$oid": "6a1717ecc6d3d83b6cabc116"
+  },
+  "rut": "16234987-4",
+  "nombre": "Rosa Flores",
+  "fecha_registro": {
+    "$date": "2025-12-05T00:00:00.000Z"
+  },
+  "direccion": "Puren 364, Chillán",
+  "telefono": "+56934568294",
+  "email": "roflores12@gmail.com"
+},
+{
+  "_id": {
+    "$oid": "6a19a5522ff9e0cf6fa93cc9"
+  },
+  "rut": "14725836-4",
+  "nombre": "Alexis Sanchez",
+  "fecha_registro": {
+    "$date": "2025-12-05T00:00:00.000Z"
+  },
+  "direccion": "Calle Falsa 123, Springfield",
+  "telefono": "+56911112222",
+  "email": "alexis@outlook.cl"
+},
+{
+  "_id": {
+    "$oid": "6a19a69f9d54d5256c3682d2"
+  },
+  "rut": "25836914-1",
+  "nombre": "Homero Simpson",
+  "fecha_registro": {
+    "$date": "2026-05-29T14:45:51.193Z"
+  },
+  "direccion": "Avenida siempreviva, Springfield",
+  "telefono": "+56966665555",
+  "email": "homero@gmail.com"
+},
+{
+  "_id": {
+    "$oid": "6a19a7489d54d5256c3682d3"
+  },
+  "rut": "88888888-1",
+  "nombre": "Mario Bros",
+  "fecha_registro": {
+    "$date": "2025-09-05T00:00:00.000Z"
+  },
+  "direccion": "Mundo 1, Reino Champiñon",
+  "telefono": "+56933334444",
+  "email": "mario@yahoo.com"
+},
+{
+  "_id": {
+    "$oid": "6a19a8eece607671c13682d3"
+  },
+  "rut": "22777888-4",
+  "nombre": "Leo rey",
+  "fecha_registro": {
+    "$date": "2025-03-01T00:00:00.000Z"
+  },
+  "direccion": "Av Libertad 255",
+  "telefono": "+56266221107",
+  "email": "leorey@gmail.com"
+},
+{
+  "_id": {
+    "$oid": "6a19a8eece607671c13682d4"
+  },
+  "rut": "22888999-1",
+  "nombre": "Tony Stark",
+  "fecha_registro": {
+    "$date": "2023-07-22T00:00:00.000Z"
+  },
+  "direccion": "Claudio Arrau 398",
+  "telefono": "+56211425509",
+  "email": "tonystark@outlook.com"
+}]
