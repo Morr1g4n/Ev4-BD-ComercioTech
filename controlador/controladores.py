@@ -336,6 +336,7 @@ class Controladores:
                 return True  # solo usarlo al final, evita que aparezca operación cancelada por el if en menu
             elif eleccion == "n":
                 return False
+
     def update_anadir_producto_pedido(self):
         self.limpiarconsola()
         print("(Ingrese RUT del cliente para ver sus pedidos)")
@@ -444,3 +445,71 @@ class Controladores:
                 print("Cancelando operación..")
                 self.continuar()
                 return False
+    
+    def update_eliminar_producto_pedido(self):
+        self.limpiarconsola()
+        print("(Ingrese RUT del cliente para ver sus pedidos)")
+        rut = self.ValidarRut()
+        lista_pedidos = manager.r_pedidos_rut(rut)
+        if not lista_pedidos:
+            self.continuar()
+            return False
+        while True:
+            dbprint.print_pedidos(lista_pedidos) #esta función de print ya añade el índice seleccionable a la lista, por lo que no hace falta agregarlo aparte
+            try:
+                seleccion = int(input("Seleccione un pedido: "))
+                pedido_elegido = next(
+                    (p for p in lista_pedidos if p["numero_pedido"] == seleccion),
+                    None,
+                )
+                if pedido_elegido:
+                    id_pedido_elegido = pedido_elegido.get("_id")
+                    monto_total = int(pedido_elegido.get("monto_total"))
+                    lista_productos_pedido = pedido_elegido.get("productos")
+                    break
+                else:
+                    print("Ingrese un pedido válido")
+                    self.continuar()
+            except ValueError:
+                print("Ingrese un valor válido")
+                self.continuar()
+        print("Ahora eligirá el producto a eliminar")
+        self.continuar() 
+        if not lista_productos_pedido:
+            self.continuar()
+            return False
+        for indice, producto in enumerate(lista_productos_pedido, start=1):
+            producto["numero_producto"] = indice
+
+        while True:
+            dbprint.print_productos_disponibles(lista_productos_pedido)
+            try:
+                seleccion = int(input("Seleccione un producto: "))
+                producto_elegido = next(
+                    (p for p in lista_productos_pedido if p["numero_producto"] == seleccion),
+                    None,
+                )
+                if producto_elegido:
+                    id_producto_elegido = producto_elegido.get("producto_id")
+                    precio_producto = producto_elegido.get("precio")
+                    monto_total -= precio_producto
+                    break
+                else:
+                    print("Seleccione un producto válido")
+                    self.continuar()
+            except ValueError:
+                print("Ingrese un valor válido")
+                self.continuar()
+        
+        while True:
+            eleccion = input("¿Está seguro que quiere eliminar el producto de este pedido?(S/N): ")
+            eleccion = eleccion.lower().strip()
+            if eleccion == "s":
+                manager.u_pedido_eliminar_productos(id_pedido_elegido, monto_total, id_producto_elegido)
+                self.continuar()
+                return True
+            elif eleccion == "n":
+                print("Cancelando operación..")
+                return False
+            else:
+                print("Seleccione una opción válida")
