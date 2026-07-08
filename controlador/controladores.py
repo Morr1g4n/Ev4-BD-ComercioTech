@@ -311,7 +311,7 @@ class Controladores:
     def create_producto(self):
         self.limpiarconsola()
         print("(Pulse enter vacío para cancelar la operación)")
-        nombre = input("Ingrese nombre del producto que agregara: ")
+        nombre = input("Ingrese nombre del producto que agregará: ")
         if not nombre:
             return False
         nombre = nombre.strip()
@@ -325,7 +325,7 @@ class Controladores:
                 precio = int(precio) #luegod e hacer todas las comprobaciones transformamos el precio en un int
                 break
             else:
-                print("Error. Debe ingresar un numero entero valido")
+                print("Error. Debe ingresar un número entero válido")
 
         producto = {
             "nombre": nombre,
