@@ -1,0 +1,28 @@
+[{
+  "_id": {
+    "$oid": "6a1786a512867056d63682d2"
+  },
+  "nombre": "Camisa",
+  "precio": 100
+},
+{
+  "_id": {
+    "$oid": "6a1786a512867056d63682d4"
+  },
+  "nombre": "Chaqueta",
+  "precio": 200
+},
+{
+  "_id": {
+    "$oid": "6a1786a512867056d63682d1"
+  },
+  "nombre": "Pantalón",
+  "precio": 50
+},
+{
+  "_id": {
+    "$oid": "6a1786a512867056d63682d3"
+  },
+  "nombre": "Vestido",
+  "precio": 150
+}]
