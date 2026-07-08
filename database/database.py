@@ -247,3 +247,25 @@ class MongoManager:
                 print("Hubo un error al eliminar el pedido")
         except Exception as e:
             print(e)
+
+
+
+#Seccion Producto
+    def c_producto(self, data):
+        try:
+            cursor = db[COL_PRODUCTOS].insert_one(
+                {
+                    "nombre": data.get("nombre"),
+                    "precio": data.get("precio"),
+
+                }
+            )
+            resultado = cursor.acknowledged
+            # la función de insert_one retorna una instancia de InsertOneResult (se puede imprimir cursor para ver el objeto que genera)
+            # se puede usar el atributo acknowledged para saber si se insertó o no (booleano)
+            if resultado:
+                print("Se insertó correctamente el producto.")
+            else:
+                print("Hubo un problema al insertar el producto")
+        except Exception as e:
+            print(e)
