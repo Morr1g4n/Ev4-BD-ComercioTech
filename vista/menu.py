@@ -48,7 +48,7 @@ class Menu:
             elif eleccion == "2":
                 controlador.read_clientes_todos()
             elif eleccion == "3":
-                pass
+                controlador.update_cliente()
             elif eleccion == "4":
                 controlador.delete_cliente()
             elif eleccion == "0":

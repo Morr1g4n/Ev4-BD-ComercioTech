@@ -60,8 +60,21 @@ class MongoManager:
         except Exception as e:
             print(e)
 
+    def r_cliente_one(self, rut):
+        try:
+            cursor = db[COL_CLIENTES].find_one({"rut": rut})
+            resultado = cursor
+            if resultado:
+                return resultado
+            else:
+                print("No se encuentran resultados")
+        except Exception as e:
+            print(e)
+
     def d_cliente(self, rut):
         try:
+            if rut == "":
+                return
             cursor = db[COL_CLIENTES].delete_one({"rut": rut})
             if cursor.deleted_count >= 1:
                 print("Se ha eliminado el cliente")
@@ -89,6 +102,31 @@ class MongoManager:
                 print("Se insertó correctamente el cliente.")
             else:
                 print("Hubo un problema al insertar el cliente.")
+        except Exception as e:
+            print(e)
+
+    def u_cliente(self, data):
+        try:
+            cursor = db[COL_CLIENTES].update_one(
+                {"rut": data["rut"]},
+                {
+                    "$set": {
+                        "rut": data["rut"],
+                        "nombre": data["nombre"],
+                        "fecha_registro": data["fecha_registro"],
+                        "direccion": data["direccion"],
+                        "telefono": data["telefono"],
+                        "email": data["email"],
+                    }
+                },
+            )
+            resultado = cursor.acknowledged
+            # la función de insert_one retorna una instancia de InsertOneResult (se puede imprimir cursor para ver el objeto que genera)
+            # se puede usar el atributo acknowledged para saber si se insertó o no (booleano)
+            if resultado:
+                print("Se actualizo correctamente el cliente.")
+            else:
+                print("Hubo un problema al actualizar el cliente.")
         except Exception as e:
             print(e)
 
@@ -273,7 +311,6 @@ class MongoManager:
                 {
                     "nombre": data.get("nombre"),
                     "precio": data.get("precio"),
-
                 }
             )
             resultado = cursor.acknowledged
@@ -289,27 +326,11 @@ class MongoManager:
     def u_pedido_anadir_productos(self, id, monto_total, lista_productos):
         try:
             cursor = db[COL_PEDIDOS].update_one(
-                {
-                    "_id":id
-                },
-                {
-                    "$set":
-                    {
-                        "monto_total":monto_total
-                    }
-                }
+                {"_id": id}, {"$set": {"monto_total": monto_total}}
             )
             for producto in lista_productos:
                 cursor = db[COL_PEDIDOS].update_one(
-                    {
-                        "_id":id
-                    },
-                    {
-                        "$push":
-                    {
-                        "productos": producto
-                    }
-                    }
+                    {"_id": id}, {"$push": {"productos": producto}}
                 )
             resultado = cursor.modified_count
             if resultado == 1:
@@ -318,25 +339,17 @@ class MongoManager:
                 print("Hubo un error al agregar los productos")
         except Exception as e:
             print(e)
-    
+
     def u_pedido_eliminar_productos(self, id_pedido, monto_total, id_producto):
         try:
             id_producto = ObjectId(id_producto)
             id_pedido = ObjectId(id_pedido)
             cursor = db[COL_PEDIDOS].update_one(
+                {"_id": id_pedido},
                 {
-                    "_id":id_pedido
+                    "$set": {"monto_total": monto_total},
+                    "$pull": {"productos": {"producto_id": id_producto}},
                 },
-                {
-                    "$set":
-                    {
-                        "monto_total":monto_total
-                    },
-                    "$pull":
-                    {
-                        "productos": {"producto_id": id_producto}
-                    }
-                }
             )
             resultado = cursor.modified_count
             if resultado == 1:
@@ -346,24 +359,24 @@ class MongoManager:
         except Exception as e:
             print(e)
 
-
-    def comprobar_producto(self,nombre_producto):
+    def comprobar_producto(self, nombre_producto):
         cursor_producto = db[COL_PRODUCTOS].find_one({"nombre": nombre_producto})
-            
+
         if not cursor_producto:
             print(f"El producto '{nombre_producto}' no existe en el catálogo.")
             return False
 
         else:
             id_producto = cursor_producto["_id"]
-            cursor_prodasociado = db[COL_PEDIDOS].find_one({"productos.producto_id": id_producto})
+            cursor_prodasociado = db[COL_PEDIDOS].find_one(
+                {"productos.producto_id": id_producto}
+            )
             if cursor_prodasociado:
                 print("El producto esta asociado a un pedido.")
                 print("No se puede eliminar el producto")
                 return False
             else:
                 return True
-            
 
     def bd_eliminar_producto(self, nombre_producto):
         try:

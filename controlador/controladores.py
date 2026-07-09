@@ -122,20 +122,118 @@ class Controladores:
             elif eleccion == "n":
                 return False
 
+    def update_cliente(self):
+        while True:
+            self.limpiarconsola()
+            print("Modificar un cliente:")
+            rut = self.ValidarRut()
+            if rut == "":
+                break
+            cliente = manager.r_cliente_one(rut)
+            if not cliente:
+                print("El rut no existe")
+                return
+            self.limpiarconsola()
+            print("Cliente encontrado:")
+            dbprint.print_clientes([cliente], False)
+            campos = list(cliente)
+            new_cliente = cliente.copy()
+            cantidad_cambios = 0
+            for campo in campos:
+                campo_legible = str(campo).replace("_", " ").capitalize()
+                if campo == "_id":
+                    continue
+                opcion = input(
+                    "¿Deseas modificar el campo {}? (s/N):".format(campo_legible)
+                )
+                if opcion == "s":
+                    cantidad_cambios += 1
+                    print(
+                        "El valor actual de {} es {}".format(
+                            campo_legible, cliente[campo]
+                        )
+                    )
+                    if campo == "fecha_registro":
+                        valor = self.ValidarFecha()
+                        if valor:
+                            new_cliente[campo] = valor
+
+                    elif campo == "telefono":
+                        valor = self.ValidarTelefono()
+                        if valor:
+                            new_cliente[campo] = valor
+                    else:
+                        new_cliente[campo] = input("Ingresa el nuevo valor:")
+                elif opcion == "":
+                    continue
+                else:
+                    print("Ingresa una opción correcta (s/n)")
+            self.limpiarconsola()
+            if cantidad_cambios == 0:
+                print("No realizaste ningún cambio")
+                input("Presiona Enter para volver al menu...")
+                break
+            print("Cliente original:")
+            dbprint.print_clientes([cliente], False)
+            print("Hay {} cambios a realizar:".format(str(cantidad_cambios)))
+            dbprint.print_clientes([new_cliente], False)
+            input("Presiona enter para continuar")
+            self.limpiarconsola()
+            manager.u_cliente(new_cliente)
+            break
+
     def delete_cliente(self):
         self.limpiarconsola()
         rut = self.ValidarRut()
         manager.d_cliente(rut)
         self.continuar()
 
+    def ValidarTelefono(self):
+        while True:
+            try:
+                regex_tel = re.compile("^\\+569\\d{8}$")
+                telefono = input("Ingrese telefono: +569")
+                telefono = telefono.strip()
+                if not telefono:
+                    return False
+                telefono = "+569" + telefono
+                if regex_tel.match(telefono):
+                    return telefono
+                else:
+                    print("Ingrese un teléfono válido")
+            except Exception as e:
+                print(e)
+
+    def ValidarCorreo(self):
+        pass
+
+    def ValidarFecha(self):
+        while True:
+            try:
+                fecha_registro = input(
+                    "Ingrese fecha de registro(Formato AAAA-MM-DD, incluya guión): "
+                )
+                if fecha_registro == "":
+                    return False
+                fecha_registro = fecha_registro.strip()
+                fecha_registro = datetime.strptime(
+                    fecha_registro, "%Y-%m-%d"
+                )  # lanza value error si el formato es incorrecto o la fecha es inválida, no hace falta un raise
+                return fecha_registro
+            except ValueError:
+                print("Ingrese una fecha válida")
+
     def ValidarRut(self):
         rutValido = ""
         while rutValido == "":
             try:
                 regex_rut = re.compile("^\\d{8}-\\d$")
+                print("Si desea cancelar la operación escriba exit y presione Enter")
                 rut = input("Ingrese RUT del cliente (sin puntos y con guión): ")
                 while rut == "":
                     rut = input("Ingrese RUT del cliente (sin puntos y con guión): ")
+                if rut == "exit":
+                    return ""
                 rut = rut.strip()
                 if not regex_rut.match(rut):
                     print("Ingrese un RUT válido")
@@ -259,7 +357,7 @@ class Controladores:
                 return False
             else:
                 print("Seleccione una opción válida")
-    
+
     def delete_pedido(self):
         self.limpiarconsola()
         print("(Ingrese RUT del cliente para ver sus pedidos)")
@@ -269,7 +367,9 @@ class Controladores:
             self.continuar()
             return False
         while True:
-            dbprint.print_pedidos(lista_pedidos) #esta función de print ya añade el índice seleccionable a la lista, por lo que no hace falta agregarlo aparte
+            dbprint.print_pedidos(
+                lista_pedidos
+            )  # esta función de print ya añade el índice seleccionable a la lista, por lo que no hace falta agregarlo aparte
             try:
                 seleccion = int(input("Seleccione un pedido: "))
                 pedido_elegido = next(
@@ -285,7 +385,7 @@ class Controladores:
             except ValueError:
                 print("Ingrese un valor válido")
                 self.continuar()
-        
+
         while True:
             eleccion = input("¿Está seguro que quiere eliminar este pedido?(S/N): ")
             eleccion = eleccion.strip().lower()
@@ -313,8 +413,12 @@ class Controladores:
             if not precio:
                 return False
 
-            if precio.isdigit(): #Esto es un metodo propio de python de las cadenas de texto
-                precio = int(precio) #luegod e hacer todas las comprobaciones transformamos el precio en un int
+            if (
+                precio.isdigit()
+            ):  # Esto es un metodo propio de python de las cadenas de texto
+                precio = int(
+                    precio
+                )  # luegod e hacer todas las comprobaciones transformamos el precio en un int
                 break
             else:
                 print("Error. Debe ingresar un número entero válido")
@@ -324,9 +428,7 @@ class Controladores:
             "precio": precio,
         }
         print("Datos del Producto a añadir:")
-        print(
-            f"Nombre: {producto["nombre"]} | Precio: {producto["precio"]}"
-        )
+        print(f"Nombre: {producto["nombre"]} | Precio: {producto["precio"]}")
         while True:
             eleccion = input("¿Quiere agregar este producto? (S/N): ")
             eleccion = eleccion.strip().lower()
@@ -347,7 +449,9 @@ class Controladores:
             self.continuar()
             return False
         while True:
-            dbprint.print_pedidos(lista_pedidos) #esta función de print ya añade el índice seleccionable a la lista, por lo que no hace falta agregarlo aparte
+            dbprint.print_pedidos(
+                lista_pedidos
+            )  # esta función de print ya añade el índice seleccionable a la lista, por lo que no hace falta agregarlo aparte
             try:
                 seleccion = int(input("Seleccione un pedido: "))
                 pedido_elegido = next(
@@ -431,21 +535,23 @@ class Controladores:
             print("El pedido no puede estar vacío, cancelando..")
             self.continuar()
             return False
-        
+
         while True:
             eleccion = input("¿Desea agregar los productos al pedido?(S/N): ")
             eleccion = eleccion.strip().lower()
             if eleccion == "s":
                 for producto in productos_anadir:
                     del producto["nombre"]
-                manager.u_pedido_anadir_productos(id_pedido_elegido, monto_total, productos_anadir)
+                manager.u_pedido_anadir_productos(
+                    id_pedido_elegido, monto_total, productos_anadir
+                )
                 self.continuar()
                 return True
             elif eleccion == "n":
                 print("Cancelando operación..")
                 self.continuar()
                 return False
-    
+
     def update_eliminar_producto_pedido(self):
         self.limpiarconsola()
         print("(Ingrese RUT del cliente para ver sus pedidos)")
@@ -455,7 +561,9 @@ class Controladores:
             self.continuar()
             return False
         while True:
-            dbprint.print_pedidos(lista_pedidos) #esta función de print ya añade el índice seleccionable a la lista, por lo que no hace falta agregarlo aparte
+            dbprint.print_pedidos(
+                lista_pedidos
+            )  # esta función de print ya añade el índice seleccionable a la lista, por lo que no hace falta agregarlo aparte
             try:
                 seleccion = int(input("Seleccione un pedido: "))
                 pedido_elegido = next(
@@ -474,7 +582,7 @@ class Controladores:
                 print("Ingrese un valor válido")
                 self.continuar()
         print("Ahora eligirá el producto a eliminar")
-        self.continuar() 
+        self.continuar()
         if not lista_productos_pedido:
             self.continuar()
             return False
@@ -486,7 +594,11 @@ class Controladores:
             try:
                 seleccion = int(input("Seleccione un producto: "))
                 producto_elegido = next(
-                    (p for p in lista_productos_pedido if p["numero_producto"] == seleccion),
+                    (
+                        p
+                        for p in lista_productos_pedido
+                        if p["numero_producto"] == seleccion
+                    ),
                     None,
                 )
                 if producto_elegido:
@@ -500,12 +612,16 @@ class Controladores:
             except ValueError:
                 print("Ingrese un valor válido")
                 self.continuar()
-        
+
         while True:
-            eleccion = input("¿Está seguro que quiere eliminar el producto de este pedido?(S/N): ")
+            eleccion = input(
+                "¿Está seguro que quiere eliminar el producto de este pedido?(S/N): "
+            )
             eleccion = eleccion.lower().strip()
             if eleccion == "s":
-                manager.u_pedido_eliminar_productos(id_pedido_elegido, monto_total, id_producto_elegido)
+                manager.u_pedido_eliminar_productos(
+                    id_pedido_elegido, monto_total, id_producto_elegido
+                )
                 self.continuar()
                 return True
             elif eleccion == "n":
@@ -521,11 +637,13 @@ class Controladores:
         nombre = nombre.strip()
         if not nombre:
             return False
-        
+
         comprobacion = manager.comprobar_producto(nombre)
         if comprobacion:
             while True:
-                eleccion = input(f"¿Está seguro que quiere eliminar el producto '{nombre}' del catálogo? (S/N): ")
+                eleccion = input(
+                    f"¿Está seguro que quiere eliminar el producto '{nombre}' del catálogo? (S/N): "
+                )
                 eleccion = eleccion.lower().strip()
                 if eleccion == "s":
                     manager.bd_eliminar_producto(nombre)
