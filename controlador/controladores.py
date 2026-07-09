@@ -513,3 +513,28 @@ class Controladores:
                 return False
             else:
                 print("Seleccione una opción válida")
+
+    def eliminar_producto(self):
+        self.limpiarconsola()
+        print("(Pulse enter vacío para cancelar la operación)")
+        nombre = input("Ingrese nombre del producto para eliminar: ")
+        nombre = nombre.strip()
+        if not nombre:
+            return False
+        
+        comprobacion = manager.comprobar_producto(nombre)
+        if comprobacion:
+            while True:
+                eleccion = input(f"¿Está seguro que quiere eliminar el producto '{nombre}' del catálogo? (S/N): ")
+                eleccion = eleccion.lower().strip()
+                if eleccion == "s":
+                    manager.bd_eliminar_producto(nombre)
+                    self.continuar()
+                    return True
+                elif eleccion == "n":
+                    return False
+                else:
+                    print("Seleccione una opción válida (S o N)")
+        else:
+            self.continuar()
+            return False
