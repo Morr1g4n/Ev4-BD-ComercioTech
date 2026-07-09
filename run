@@ -1,4 +1,5 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 source .venv/bin/activate
+pip install -r requeriments.txt
 python3 iniciar.py
