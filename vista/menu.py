@@ -121,7 +121,9 @@ class Menu:
             elif eleccion == "2":
                 controlador.read_productos_todos()
             elif eleccion == "3":
-                pass
+                editar = controlador.update_editar_producto()
+                if not editar:
+                    print("Operación cancelada")
             elif eleccion == "4":
                 eliminar = controlador.eliminar_producto()
                 if not eliminar:
