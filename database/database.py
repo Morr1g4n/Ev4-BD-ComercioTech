@@ -345,3 +345,34 @@ class MongoManager:
                 print("Hubo un error al eliminar el producto")
         except Exception as e:
             print(e)
+
+
+    def comprobar_producto(self,nombre_producto):
+        cursor_producto = db[COL_PRODUCTOS].find_one({"nombre": nombre_producto})
+            
+        if not cursor_producto:
+            print(f"El producto '{nombre_producto}' no existe en el catálogo.")
+            return False
+
+        else:
+            id_producto = cursor_producto["_id"]
+            cursor_prodasociado = db[COL_PEDIDOS].find_one({"productos.producto_id": id_producto})
+            if cursor_prodasociado:
+                print("El producto esta asociado a un pedido.")
+                print("No se puede eliminar el producto")
+                return False
+            else:
+                return True
+            
+
+    def bd_eliminar_producto(self, nombre_producto):
+        try:
+            cursor = db[COL_PRODUCTOS].delete_one({"nombre": nombre_producto})
+            resultado = cursor.acknowledged
+            if resultado:
+                print("Se ha eliminado el producto")
+            else:
+                print("No se pudo eliminar el producto.")
+
+        except Exception as e:
+            print(e)

@@ -111,7 +111,9 @@ class Menu:
             elif eleccion == "3":
                 pass
             elif eleccion == "4":
-                pass
+                eliminar = controlador.eliminar_producto()
+                if not eliminar:
+                    print("Operacion cancelada")
             elif eleccion == "0":
                 self.menuInicial()
             else:
