@@ -656,3 +656,88 @@ class Controladores:
         else:
             self.continuar()
             return False
+
+    def update_editar_producto(self):
+        self.limpiarconsola()
+        lista_productos = manager.r_productos_anadir_pedido()
+        if not lista_productos:
+            self.continuar()
+            return False
+        for indice, producto in enumerate(lista_productos, start=1):
+            producto["numero_producto"] = indice
+
+        while True:
+            dbprint.print_productos_disponibles(lista_productos)
+            try:
+                seleccion = int(input("Seleccione un producto: "))
+                producto_elegido = next(
+                    (p for p in lista_productos if p["numero_producto"] == seleccion),
+                    None,
+                )
+                if producto_elegido:
+                    id_producto_elegido = producto_elegido.get("_id")
+                    nombre = producto_elegido.get("nombre")
+                    precio = producto_elegido.get("precio")
+                    break
+                else:
+                    print("Seleccione un producto válido")
+                    self.continuar()
+                    continue 
+            except ValueError:
+                print("Ingrese un valor válido")
+                self.continuar()
+                continue
+        
+        otro = True
+        while otro:
+            self.limpiarconsola()
+            print("1. Editar Nombre")
+            print("2. Editar Precio")
+            eleccion = input("Ingrese campo a editar: ")
+            eleccion = eleccion.strip()
+            if eleccion == "1":
+                while True:
+                    nombre = input("Ingrese nuevo nombre: ")
+                    nombre = nombre.strip()
+                    if not nombre:
+                        print("No puede ingresar un nombre vacío")
+                    else:
+                        break
+            elif eleccion == "2":
+                while True:
+                    try:
+                        precio = int(input("Ingrese un nuevo precio: "))
+                        if precio < 1:
+                            print("Ingrese un valor válido")
+                        else:
+                            break
+                    except ValueError:
+                        print("Ingrese un valor válido")
+            else:
+                print("Ingrese una opción válida")
+                continue
+
+            while True:
+                seguir = input("¿Quiere editar otro campo?(S/N): ")
+                seguir = seguir.lower().strip()
+                if seguir == "s":
+                    otro = True
+                    break
+                elif seguir == "n":
+                    otro = False
+                    break
+                else:
+                    print("Seleccione una opción válida")
+
+        while True:
+                eleccion = input("¿Confirma la edición del producto?(S/N): ")
+                eleccion = eleccion.lower().strip()
+                if eleccion == "s":
+                    editar = manager.u_editar_producto(id_producto_elegido, nombre, precio)
+                    self.continuar()
+                    return False
+                elif eleccion == "n":
+                    print("Cancelando operación..")
+                    return False
+                else:
+                    print("Seleccione una opción válida")

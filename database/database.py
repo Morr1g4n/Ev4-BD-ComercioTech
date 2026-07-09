@@ -389,3 +389,23 @@ class MongoManager:
 
         except Exception as e:
             print(e)
+
+    def u_editar_producto(self, id_producto, nombre, precio):
+        try:
+            cursor = db[COL_PRODUCTOS].update_one(
+                {"_id":id_producto},
+                {
+                    "$set":
+                    {
+                        "nombre":nombre,
+                        "precio":precio
+                    }
+                }
+            )
+            resultado = cursor.modified_count
+            if resultado > 0:
+                print("Se actualizó el producto correctamente.")
+            else:
+                print("Hubo un error al editar el producto.")
+        except Exception as e:
+            print(e)
