@@ -35,6 +35,27 @@ class Menu:
                 self.menuProductos()
             elif eleccion == "4":
                 controlador.limpiarconsola()
+                print("CUIDADO este setup eliminará toda la información de la base de datos y la reiniciará")
+                while True:
+                    confirmar = input("¿Seguir? (Confirmación 1/2) (S/N): ")
+                    confirmar = confirmar.lower().strip()
+                    if confirmar == "s":
+                        break
+                    elif confirmar == "n":
+                        self.menuInicial()
+                    else:
+                        print("Seleccione una opción válida")
+
+                while True:
+                    confirmar = input("¿Seguir? (Confirmación 2/2) (S/N): ")
+                    confirmar = confirmar.lower().strip()
+                    if confirmar == "s":
+                        break
+                    elif confirmar == "n":
+                        self.menuInicial()
+                    else:
+                        print("Seleccione una opción válida")
+
                 manager.setup()
             elif eleccion == "0":
                 print("Adiós!")
