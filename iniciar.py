@@ -2,4 +2,4 @@ from vista.menu import Menu
 
 menu = Menu()
 
-menu.menuInicial()
+menu.splashScreen()
